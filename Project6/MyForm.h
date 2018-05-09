@@ -60,6 +60,8 @@ namespace Project6 {
 	private: System::Windows::Forms::ContextMenuStrip^  contextMenuStrip1;
 	private: System::Windows::Forms::ToolStripMenuItem^  addAfterToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  duplicateToolStripMenuItem;
+	private: System::Windows::Forms::RichTextBox^  richTextBox1;
+	private: System::Windows::Forms::ToolStripMenuItem^  getAddressToolStripMenuItem;
 	private: System::ComponentModel::IContainer^  components;
 
 
@@ -89,12 +91,14 @@ namespace Project6 {
 			this->splitContainer1 = (gcnew System::Windows::Forms::SplitContainer());
 			this->treeView1 = (gcnew System::Windows::Forms::TreeView());
 			this->splitContainer2 = (gcnew System::Windows::Forms::SplitContainer());
+			this->richTextBox1 = (gcnew System::Windows::Forms::RichTextBox());
 			this->listView1 = (gcnew System::Windows::Forms::ListView());
 			this->openFileDialog1 = (gcnew System::Windows::Forms::OpenFileDialog());
 			this->saveFileDialog1 = (gcnew System::Windows::Forms::SaveFileDialog());
 			this->contextMenuStrip1 = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
 			this->addAfterToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->duplicateToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->getAddressToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->menuStrip1->SuspendLayout();
 			this->panel1->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->splitContainer1))->BeginInit();
@@ -102,6 +106,7 @@ namespace Project6 {
 			this->splitContainer1->Panel2->SuspendLayout();
 			this->splitContainer1->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->splitContainer2))->BeginInit();
+			this->splitContainer2->Panel1->SuspendLayout();
 			this->splitContainer2->Panel2->SuspendLayout();
 			this->splitContainer2->SuspendLayout();
 			this->contextMenuStrip1->SuspendLayout();
@@ -199,6 +204,7 @@ namespace Project6 {
 			this->treeView1->Name = L"treeView1";
 			this->treeView1->Size = System::Drawing::Size(146, 347);
 			this->treeView1->TabIndex = 0;
+			this->treeView1->NodeMouseClick += gcnew System::Windows::Forms::TreeNodeMouseClickEventHandler(this, &MyForm::treeView1_NodeMouseClick);
 			// 
 			// splitContainer2
 			// 
@@ -207,12 +213,25 @@ namespace Project6 {
 			this->splitContainer2->Name = L"splitContainer2";
 			this->splitContainer2->Orientation = System::Windows::Forms::Orientation::Horizontal;
 			// 
+			// splitContainer2.Panel1
+			// 
+			this->splitContainer2->Panel1->Controls->Add(this->richTextBox1);
+			// 
 			// splitContainer2.Panel2
 			// 
 			this->splitContainer2->Panel2->Controls->Add(this->listView1);
 			this->splitContainer2->Size = System::Drawing::Size(384, 347);
 			this->splitContainer2->SplitterDistance = 229;
 			this->splitContainer2->TabIndex = 0;
+			// 
+			// richTextBox1
+			// 
+			this->richTextBox1->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->richTextBox1->Location = System::Drawing::Point(0, 0);
+			this->richTextBox1->Name = L"richTextBox1";
+			this->richTextBox1->Size = System::Drawing::Size(384, 229);
+			this->richTextBox1->TabIndex = 0;
+			this->richTextBox1->Text = L"";
 			// 
 			// listView1
 			// 
@@ -234,24 +253,31 @@ namespace Project6 {
 			// contextMenuStrip1
 			// 
 			this->contextMenuStrip1->ImageScalingSize = System::Drawing::Size(20, 20);
-			this->contextMenuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+			this->contextMenuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {
 				this->addAfterToolStripMenuItem,
-					this->duplicateToolStripMenuItem
+					this->duplicateToolStripMenuItem, this->getAddressToolStripMenuItem
 			});
 			this->contextMenuStrip1->Name = L"contextMenuStrip1";
-			this->contextMenuStrip1->Size = System::Drawing::Size(136, 52);
+			this->contextMenuStrip1->Size = System::Drawing::Size(152, 76);
 			// 
 			// addAfterToolStripMenuItem
 			// 
 			this->addAfterToolStripMenuItem->Name = L"addAfterToolStripMenuItem";
-			this->addAfterToolStripMenuItem->Size = System::Drawing::Size(135, 24);
+			this->addAfterToolStripMenuItem->Size = System::Drawing::Size(151, 24);
 			this->addAfterToolStripMenuItem->Text = L"Add after";
 			// 
 			// duplicateToolStripMenuItem
 			// 
 			this->duplicateToolStripMenuItem->Name = L"duplicateToolStripMenuItem";
-			this->duplicateToolStripMenuItem->Size = System::Drawing::Size(135, 24);
+			this->duplicateToolStripMenuItem->Size = System::Drawing::Size(151, 24);
 			this->duplicateToolStripMenuItem->Text = L"Duplicate";
+			// 
+			// getAddressToolStripMenuItem
+			// 
+			this->getAddressToolStripMenuItem->Name = L"getAddressToolStripMenuItem";
+			this->getAddressToolStripMenuItem->Size = System::Drawing::Size(151, 24);
+			this->getAddressToolStripMenuItem->Text = L"Get address";
+			this->getAddressToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::getAddressToolStripMenuItem_Click);
 			// 
 			// MyForm
 			// 
@@ -272,6 +298,7 @@ namespace Project6 {
 			this->splitContainer1->Panel2->ResumeLayout(false);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->splitContainer1))->EndInit();
 			this->splitContainer1->ResumeLayout(false);
+			this->splitContainer2->Panel1->ResumeLayout(false);
 			this->splitContainer2->Panel2->ResumeLayout(false);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->splitContainer2))->EndInit();
 			this->splitContainer2->ResumeLayout(false);
@@ -288,21 +315,49 @@ namespace Project6 {
 			
 			for (int i = 0; i < root_node->ChildNodes->Count; i++){
 				this->treeView1->Nodes[0]->Nodes->Add(root_node->ChildNodes[i]->Name);
+				this->treeView1->Nodes[0]->Nodes[i]->ContextMenuStrip = this->contextMenuStrip1;
 
 				for (int j = 0; j < root_node->ChildNodes[i]->ChildNodes->Count; j++){
 					this->treeView1->Nodes[0]->Nodes[i]->Nodes->Add(root_node->ChildNodes[i]->ChildNodes[j]->Name);
+					this->treeView1->Nodes[0]->Nodes[i]->Nodes[j]->ContextMenuStrip = this->contextMenuStrip1;
 
 					for (int k = 0; k < root_node->ChildNodes[i]->ChildNodes[j]->ChildNodes->Count; k++){
-						this->treeView1->Nodes[0]->Nodes[i]->Nodes[k]->Nodes->Add(root_node->ChildNodes[i]->ChildNodes[j]->ChildNodes[k]->Name);					
+						this->treeView1->Nodes[0]->Nodes[i]->Nodes[j]->Nodes->Add(root_node->ChildNodes[i]->ChildNodes[j]->ChildNodes[k]->Name);
+						this->treeView1->Nodes[0]->Nodes[i]->Nodes[j]->Nodes[k]->ContextMenuStrip = this->contextMenuStrip1;
 					}
 				}
 			}
+		}
+
+		private: System::String^ selected_treeview_node_address(System::Windows::Forms::TreeView^ treeview) {
+
+			System::String^ address;
+			System::Windows::Forms::TreeNode^ node = treeview->SelectedNode;
+			int depth = node->Level;
+			address = "/[0]";
+			for (int i = 0; i < depth; i++)
+			{
+				address = address + "/[";
+				address = address + node->Index;
+				address = address + "]";
+
+				node = node->Parent;
+
+			}
+
+			return address;
+
+
 		}
 
 
 
 
 	//Events****************
+
+
+
+
 	private: System::Void openToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
 
 		this->treeView1->Nodes->Clear();
@@ -344,6 +399,15 @@ private: System::Void saveasToolStripMenuItem_Click(System::Object^  sender, Sys
 		this->doc->Save(selected_path);
 	}
 
+}
+private: System::Void getAddressToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+
+	this->richTextBox1->Clear();
+	this->richTextBox1->AppendText(selected_treeview_node_address(this->treeView1));
+
+}
+private: System::Void treeView1_NodeMouseClick(System::Object^  sender, System::Windows::Forms::TreeNodeMouseClickEventArgs^  e) {
+	treeView1->SelectedNode = e->Node;
 }
 };
 }
